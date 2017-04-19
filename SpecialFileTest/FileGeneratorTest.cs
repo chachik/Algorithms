@@ -8,7 +8,7 @@ namespace FileFactoryTest
     [TestClass]
     public class FileGeneratorTest
     {
-        const long FileSize = 10737418240; // 10Gb // 104857600; // 100 MB
+        const long FileSize = 1048576000; // 1 Gb  // 10737418240; // 10Gb
         const int MinNumber = 1;
         const int MaxNumber = 100000;
 
