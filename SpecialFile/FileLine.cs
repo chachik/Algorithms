@@ -4,43 +4,81 @@ namespace SpecialFile
 {
     public class FileLine : IComparable
     {
-        public long Number { get; private set; }
         public string String { get; private set; }
 
         public FileLine(string text)
         {
-            if (text == null)
-            {
-                return;
-            }
-
-            var subStrings = text.Split('.');
-
-            if (subStrings.Length == 2)
-            {
-                var number = 0;
-                if (int.TryParse(subStrings[0], out number))
-                {
-                    Number = number;
-                }
-                
-                String = subStrings[1];
-            }
+            String = text;
         }
 
         public int CompareTo(object obj)
         {
-            var line = obj as FileLine;
-
-            if (line == null)
+            // Make a general validations
+            var string2 = string.Empty;
+            if (obj is FileLine)
+            {
+                string2 = ((FileLine)obj).String;
+            }
+            else if (obj is string)
+            {
+                string2 = (string)obj;
+            }
+            else
             {
                 return -1;
             }
 
-            var result = this.String.CompareTo(line.String);
-            if (result == 0)
+            var p1 = String.IndexOf('.');
+            if (p1 < 0)
             {
-                result = this.Number.CompareTo(line.Number);
+                return 1;
+            }
+
+            var p2 = string2.IndexOf('.');
+            if (p2 < 0)
+            {
+                return -1;
+            }
+
+            // Compaer String part
+            var result = -1;
+            var j = p2 + 1;
+            for (int i = p1 + 1; i < String.Length; i++)
+            {
+                if (j >= string2.Length)
+                {
+                    return 1;
+                }
+
+                result = String[i].CompareTo(string2[j++]);
+                if(result != 0)
+                {
+                    return result;
+                }
+            }
+            if (j < string2.Length)
+            {
+                return -1;
+            }
+
+            // Compare Number part
+            j = 0;
+            for (int i = 0; i < p1; i++)
+            {
+                if (j >= p2)
+                {
+                    return 1;
+                }
+
+                result = String[i].CompareTo(string2[j++]);
+                if (result != 0)
+                {
+                    return result;
+                }
+            }
+            if (j < p2)
+            {
+                return -1;
             }
 
             return result;
@@ -48,7 +86,7 @@ namespace SpecialFile
 
         public override string ToString()
         {
-            return string.Format("{0}.{1}", Number, String);
+            return String;
         }
     }
 }

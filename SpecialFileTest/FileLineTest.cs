@@ -10,54 +10,138 @@ namespace FileFactoryTest
         const string String = "Apple";
 
         [TestMethod]
-        public void FileLineShouldParseText()
+        public void FileLineShouldCompareProperlyCase1()
         {
             // arrange
-            var text = string.Format("{0}.{1}", Number, String);
+            var text1 = "1.Banana";
+            var text2 = "1.Apple";
+
 
             // act
-            var line = new FileLine(text);
+            var result = new FileLine(text1).CompareTo(text2);
 
             // assert
-            Assert.AreEqual(Number, line.Number);
-            Assert.AreEqual(String, line.String);
+            Assert.AreEqual(1, result);
         }
 
         [TestMethod]
-        public void FileLineShouldIgnoreTextInWrongFormat()
+        public void FileLineShouldCompareProperlyCase2()
         {
             // arrange
-            var text1 = "WrongFormat";
-            var text2 = (string)null;
-            var text3 = string.Format("WrongNumber.{0}", String);
+            var text1 = "1.Apple"; 
+            var text2 = "1.Banana";
+
 
             // act
-            var line1 = new FileLine(text1);
-            var line2 = new FileLine(text2);
-            var line3 = new FileLine(text3);
+            var result = new FileLine(text1).CompareTo(text2);
 
             // assert
-            Assert.AreEqual(0, line1.Number);
-            Assert.IsNull(line1.String);
-
-            Assert.AreEqual(0, line2.Number);
-            Assert.IsNull(line2.String);
-
-            Assert.AreEqual(0, line3.Number);
-            Assert.AreEqual(String, line3.String);
+            Assert.AreEqual(-1, result);
         }
 
         [TestMethod]
-        public void FileLineShouldBeFormatedProperlyToString()
+        public void FileLineShouldCompareProperlyCase3()
         {
             // arrange
-            var text = string.Format("{0}.{1}", Number, String);
+            var text1 = "1.Apple";
+            var text2 = "1.Apple";
+
 
             // act
-            var line = new FileLine(text);
+            var result = new FileLine(text1).CompareTo(text2);
 
             // assert
-            Assert.AreEqual(text, line.ToString());
+            Assert.AreEqual(0, result);
+        }
+
+        [TestMethod]
+        public void FileLineShouldCompareProperlyCase4()
+        {
+            // arrange
+            var text1 = "2.Apple";
+            var text2 = "1.Apple";
+
+
+            // act
+            var result = new FileLine(text1).CompareTo(text2);
+
+            // assert
+            Assert.AreEqual(1, result);
+        }
+
+        [TestMethod]
+        public void FileLineShouldCompareProperlyCase5()
+        {
+            // arrange
+            var text1 = "1.Apple";
+            var text2 = "2.Apple";
+
+
+            // act
+            var result = new FileLine(text1).CompareTo(text2);
+
+            // assert
+            Assert.AreEqual(-1, result);
+        }
+
+        [TestMethod]
+        public void FileLineShouldCompareProperlyCase6()
+        {
+            // arrange
+            var text1 = "1.AppleA";
+            var text2 = "1.Apple";
+
+
+            // act
+            var result = new FileLine(text1).CompareTo(text2);
+
+            // assert
+            Assert.AreEqual(1, result);
+        }
+
+        [TestMethod]
+        public void FileLineShouldCompareProperlyCase7()
+        {
+            // arrange
+            var text1 = "1.Apple";
+            var text2 = "1.AppleA";
+
+
+            // act
+            var result = new FileLine(text1).CompareTo(text2);
+
+            // assert
+            Assert.AreEqual(-1, result);
+        }
+
+        [TestMethod]
+        public void FileLineShouldCompareProperlyCase8()
+        {
+            // arrange
+            var text1 = "11.Apple";
+            var text2 = "1.Apple";
+
+
+            // act
+            var result = new FileLine(text1).CompareTo(text2);
+
+            // assert
+            Assert.AreEqual(1, result);
+        }
+
+        [TestMethod]
+        public void FileLineShouldCompareProperlyCase9()
+        {
+            // arrange
+            var text1 = "1.Apple";
+            var text2 = "11.AppleA";
+
+
+            // act
+            var result = new FileLine(text1).CompareTo(text2);
+
+            // assert
+            Assert.AreEqual(-1, result);
         }
     }
 }

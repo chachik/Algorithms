@@ -41,13 +41,14 @@ namespace SpecialFile
             int fileCounter = 0;
             int processorCount = Environment.ProcessorCount;
 
-            MemoryBufferLimit = (int)(GetAvailableMemory() * 0.1 / processorCount);
+            MemoryBufferLimit = (int)(GetAvailableMemory() * 0.2 / processorCount);
 
             var lines = new List<FileLine>(MemoryBufferLimit/DefaultLineLength);
-            var chunks = new Queue<string>();
+            var chunks = new Queue<Tuple<string, Task>>();
             var str = String.Empty;
             var fileName = string.Empty;
             var tasks = new Task[processorCount];
+            var taskIndex = 0;
 
             // Read source file
             using (var file = File.OpenText(sourceFile))
@@ -62,14 +63,25 @@ namespace SpecialFile
                     if (currentSize > MemoryBufferLimit)
                     {
                         // Sort and save every chunk to a temporary file
-                        var i = (fileCounter < processorCount) ? fileCounter : Task.WaitAny(tasks);
-
+                        taskIndex = (fileCounter < processorCount) ? fileCounter : Task.WaitAny(tasks);
                         fileName = string.Format(TempFileNameTemplate, ++fileCounter);
-                        tasks[i] = SortAndSaveAsync(fileName,lines);
-                        chunks.Enqueue(fileName);
+                        tasks[taskIndex] = SortAndSaveAsync(fileName,lines);
+                        chunks.Enqueue(new Tuple<string, Task>(fileName, tasks[taskIndex]));
 
+                        // Clean lines buffer
                         currentSize = 0;
                         lines = new List<FileLine>(MemoryBufferLimit / DefaultLineLength);
+
+                        // Start merging the chanks to load CPU and I/O in parallel
+                        if (chunks.Count > 2)
+                        {
+                            taskIndex = (fileCounter < processorCount) ? fileCounter : Task.WaitAny(tasks);
+                            fileName = string.Format(TempFileNameTemplate, ++fileCounter);
+                            var chunk1 = chunks.Dequeue();
+                            var chunk2 = chunks.Dequeue();
+                            tasks[taskIndex] = MergeAsync(chunk1.Item1, chunk2.Item1, fileName, chunk1.Item2, chunk2.Item2);
+                            chunks.Enqueue(new Tuple<string, Task>(fileName, tasks[taskIndex]));
+                        }
                     }
                 }
             }
@@ -83,23 +95,23 @@ namespace SpecialFile
                     return;
                 }
 
-                var i = (fileCounter < processorCount) ? fileCounter : Task.WaitAny(tasks);
-
+                taskIndex = (fileCounter < processorCount) ? fileCounter : Task.WaitAny(tasks);
                 fileName = string.Format(TempFileNameTemplate, ++fileCounter);
-                tasks[i] = SortAndSaveAsync(fileName, lines);
-                chunks.Enqueue(fileName);
+                tasks[taskIndex] = SortAndSaveAsync(fileName, lines);
+                chunks.Enqueue(new Tuple<string, Task>(fileName, tasks[taskIndex]));
             }
 
             // Merge all chunks
             while (chunks.Count > 1)
             {
-                var i = (fileCounter < processorCount) ? fileCounter : Task.WaitAny(tasks);
-
+                taskIndex = (fileCounter < processorCount) ? fileCounter : Task.WaitAny(tasks);
                 fileName = chunks.Count == 2 ? destinationFile : string.Format(TempFileNameTemplate, ++fileCounter);
-                tasks[i] = MergeAsync(chunks.Dequeue(), chunks.Dequeue(), fileName);
+                var chunk1 = chunks.Dequeue();
+                var chunk2 = chunks.Dequeue();
+                tasks[taskIndex] = MergeAsync(chunk1.Item1, chunk2.Item1, fileName, chunk1.Item2, chunk2.Item2);
                 if (chunks.Count > 0)
                 {
-                    chunks.Enqueue(fileName);
+                    chunks.Enqueue(new Tuple<string, Task>(fileName, tasks[taskIndex]));
                 }
             }
 
