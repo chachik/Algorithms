@@ -143,5 +143,20 @@ namespace FileFactoryTest
             // assert
             Assert.AreEqual(-1, result);
         }
+
+        [TestMethod]
+        public void XRowShouldCompareProperlyCase10()
+        {
+            // arrange
+            var text1 = "100.Apple";
+            var text2 = "19.Apple";
+
+
+            // act
+            var result = new XRow(text1).CompareTo(text2);
+
+            // assert
+            Assert.AreEqual(1, result);
+        }
     }
 }

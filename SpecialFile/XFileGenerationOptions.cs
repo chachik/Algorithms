@@ -2,7 +2,7 @@
 
 namespace SpecialFile
 {
-    public class FileGeneratorOptions
+    public class XFileGenerationOptions
     {
         /// <summary>
         /// Gets or sets an inclusive lower bound for random number generation.

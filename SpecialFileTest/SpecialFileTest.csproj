@@ -50,9 +50,8 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="FileGeneratorTest.cs" />
     <Compile Include="XRowTest.cs" />
-    <Compile Include="FileSorterTest.cs" />
+    <Compile Include="XFileTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

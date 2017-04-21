@@ -62,26 +62,13 @@ namespace SpecialFile
             }
 
             // Compare Number part
-            j = 0;
-            for (int i = 0; i < p1; i++)
-            {
-                if (j >= p2)
-                {
-                    return 1;
-                }
+            int n1 = 0;
+            int.TryParse(String.Substring(0, p1), out n1);
 
-                result = String[i].CompareTo(string2[j++]);
-                if (result != 0)
-                {
-                    return result;
-                }
-            }
-            if (j < p2)
-            {
-                return -1;
-            }
+            int n2 = 0;
+            int.TryParse(string2.Substring(0, p2), out n2);
 
-            return result;
+            return n1.CompareTo(n2);
         }
 
         public override string ToString()
