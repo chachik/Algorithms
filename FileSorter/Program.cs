@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SpecialFile;
+using System;
 using System.IO;
 
 namespace FileSorter
@@ -6,6 +7,19 @@ namespace FileSorter
     class Program
     {
         static void Main(string[] args)
+        {
+            try
+            {
+                SortFile();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unexpected Exception: {0}{1}", Environment.NewLine, ex);
+                Console.ReadLine();
+            }
+        }
+
+        static void SortFile()
         {
             Console.WriteLine("--------------File sorting tool----------------");
 
@@ -38,6 +52,9 @@ namespace FileSorter
 
             Console.WriteLine();
             Console.WriteLine("File is being sorted...");
+
+            var xFile = new XFile();
+            xFile.Sort(source, destination);
 
             Console.WriteLine();
             Console.WriteLine("Done!");

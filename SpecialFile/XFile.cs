@@ -93,7 +93,7 @@ namespace SpecialFile
             }
 
             // Initialise paramets
-            var fileWorkek = new XFileWorker(destinationFile);
+            var fileWorker = new XFileWorker(destinationFile);
             var blockLimit = (int)(getAvailableMemory() * 0.2 / Environment.ProcessorCount);
             var blockCapacity = blockLimit / DefaultXRowLength;
             long currentblockSize = 0;
@@ -112,14 +112,14 @@ namespace SpecialFile
                     if (currentblockSize > blockLimit)
                     {
                         // Sort block and save it to a temporary file
-                        fileWorkek.SortAndSave(rows);
+                        fileWorker.SortAndSave(rows);
 
                         // Clean lines buffer
                         currentblockSize = 0;
                         rows = new List<XRow>(blockCapacity);
 
                         // Start merging the chanks to load CPU and I/O in parallel
-                        //fileWorkek.Merge();
+                        //fileWorker.Merge();
                     }
                 }
             }
@@ -127,11 +127,11 @@ namespace SpecialFile
             // Sort and save the last block
             if (rows.Count > 0)
             {
-                fileWorkek.SortAndSave(rows, true);
+                fileWorker.SortAndSave(rows, true);
             }
 
             // Merge all blocks
-            fileWorkek.Merge(true);
+            fileWorker.Merge(true);
         }
 
         private ulong getAvailableMemory()
@@ -145,13 +145,13 @@ namespace SpecialFile
             private string fileName = string.Empty;
             private Task[] tasks = new Task[Environment.ProcessorCount];
             private int taskIndex = 0;
-            private string destination = string.Empty;
+            private string finalDestination = string.Empty;
             private int fileCounter = 0;
             private ISortingAlgorithm<XRow> algorithm = new QuickSort<XRow>();
 
             public XFileWorker(string destinationFile)
             {
-                destination = destinationFile;
+                finalDestination = destinationFile;
             }
 
             /// <summary>
@@ -163,7 +163,7 @@ namespace SpecialFile
             {
                 if (isLastBlock && fileCounter == 0)
                 {
-                    save(destination, algorithm.Sort(rows));
+                    save(finalDestination, algorithm.Sort(rows));
                     return;
                 }
 
@@ -180,16 +180,23 @@ namespace SpecialFile
             /// If it's the last merge the function merges all available files and waits for tasks completion.</param>
             internal void Merge(bool lastMerge = false)
             {
-                if (blocks.Count > 1)
+                Task.WaitAll(tasks.Where(t => t != null).ToArray());
+                while (blocks.Count > 1)
                 {
                     taskIndex = (fileCounter < Environment.ProcessorCount) ? fileCounter : Task.WaitAny(tasks);
-                    fileName = (lastMerge && blocks.Count == 2) ? destination : string.Format(TempFileNameTemplate, ++fileCounter);
+                    fileName = (lastMerge && blocks.Count == 2) ? finalDestination : string.Format(TempFileNameTemplate, ++fileCounter);
                     var block1 = blocks.Dequeue();
                     var block2 = blocks.Dequeue();
                     tasks[taskIndex] = mergeAsync(block1.Item1, block2.Item1, fileName, block1.Item2, block2.Item2);
+
                     if (!lastMerge || blocks.Count > 0)
                     {
                         blocks.Enqueue(new Tuple<string, Task>(fileName, tasks[taskIndex]));
+                    }
+
+                    if (!lastMerge)
+                    {
+                        break;
                     }
                 }
 
@@ -201,10 +208,7 @@ namespace SpecialFile
 
             private async Task sortAndSaveAsync(string fileName, IList<XRow> list)
             {
-                await Task.Run(() =>
-                {
-                    save(fileName, algorithm.Sort(list));
-                });
+                await Task.Run(() => { save(fileName, algorithm.Sort(list)); });
             }
 
             private void save(string fileName, IList<XRow> list)
@@ -218,9 +222,9 @@ namespace SpecialFile
                 }
             }
 
-            private async Task mergeAsync(string source1, string source2, string destination, params Task[] tasks)
+            private async Task mergeAsync(string source1, string source2, string destination, params Task[] tasksToWait)
             {
-                await Task.WhenAll(tasks);
+                await Task.WhenAll(tasksToWait);
 
                 merge(source1, source2, destination);
             }
@@ -262,7 +266,6 @@ namespace SpecialFile
 
                                 d.WriteLine(l2);
                                 l2 = f2.ReadXRow();
-                                continue;
                             }
                         }
                     }

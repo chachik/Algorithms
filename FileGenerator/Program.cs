@@ -1,10 +1,36 @@
-﻿using System;
+﻿using SpecialFile;
+using System;
+using System.Collections.Generic;
 
 namespace FileGenerator
 {
     class Program
     {
+        const int MinNumber = 1;
+        const int MaxNumber = 100000;
+        static List<string> Strings =
+            new List<string>
+                {
+                    "Apple",
+                    "Something something something",
+                    "Cherry is the best",
+                    "Banana is yellow"
+                };
+
         static void Main(string[] args)
+        {
+            try
+            {
+                GenerateFile();
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Unexpected Exception: {0}{1}", Environment.NewLine, ex);
+                Console.ReadLine();
+            }
+        }
+
+        static void GenerateFile()
         {
             Console.WriteLine("--------------File generation tool----------------");
 
@@ -35,6 +61,10 @@ namespace FileGenerator
 
             Console.WriteLine();
             Console.WriteLine("File is being generated...");
+
+            var xFile = new XFile();
+            var options = new XFileGenerationOptions { FileName = file, Strings = Strings, MinNumber = MinNumber, MaxNumber = MaxNumber, FileSize = size };
+            xFile.Generate(options);
 
             Console.WriteLine();
             Console.WriteLine("Done!");

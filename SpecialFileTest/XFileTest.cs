@@ -11,7 +11,7 @@ namespace FileFactoryTest
     {
         const string SourceFile = "TestFile1.txt";
         const string DestinationFile = "SortedTestFile1.txt";
-        const long FileSize = 1048576000; // 1 Gb
+        const long FileSize = 1000000000;
         const int MinNumber = 1;
         const int MaxNumber = 100000;
         static List<string> Strings =
