@@ -2,11 +2,11 @@
 
 namespace SpecialFile
 {
-    public class FileLine : IComparable
+    public class XRow : IComparable
     {
         public string String { get; private set; }
 
-        public FileLine(string text)
+        public XRow(string text)
         {
             String = text;
         }
@@ -15,9 +15,9 @@ namespace SpecialFile
         {
             // Make a general validations
             var string2 = string.Empty;
-            if (obj is FileLine)
+            if (obj is XRow)
             {
-                string2 = ((FileLine)obj).String;
+                string2 = ((XRow)obj).String;
             }
             else if (obj is string)
             {

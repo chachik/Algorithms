@@ -6,7 +6,7 @@ using System.IO;
 namespace FileFactoryTest
 {
     [TestClass]
-    public class FileSorterTest
+    public class XFileTest
     {
         const string SourceFile = "TestFile1.txt";
         const string DestinationFile = "SortedTestFile1.txt"; 
@@ -56,12 +56,12 @@ namespace FileFactoryTest
             using (var destinationFile = File.OpenText(DestinationFile))
             {
                 var str = String.Empty;
-                XRow cur = null;
-                XRow prev = null;
+                XLine cur = null;
+                XLine prev = null;
 
                 while ((str = destinationFile.ReadLine()) != null)
                 {
-                    cur = new XRow(str);
+                    cur = new XLine(str);
 
                     if (prev != null)
                     {

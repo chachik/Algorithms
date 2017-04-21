@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Text;
+﻿using System.IO;
 
 namespace SpecialFile
 {
@@ -9,11 +6,11 @@ namespace SpecialFile
     {
         private static string str = string.Empty;
 
-        public static FileLine ReadFileLine(this StreamReader reader)
+        public static XRow ReadXRow(this StreamReader reader)
         {
             if ((str = reader.ReadLine()) != null)
             {
-                return new FileLine(str);
+                return new XRow(str);
             }
 
             return null;
