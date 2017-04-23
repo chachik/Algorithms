@@ -1,7 +1,7 @@
 ﻿using SpecialFile;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 
-namespace FileFactoryTest
+namespace SpecialFileTest
 {
     [TestClass]
     public class XRowTest
@@ -15,7 +15,6 @@ namespace FileFactoryTest
             // arrange
             var text1 = "1.Banana";
             var text2 = "1.Apple";
-
 
             // act
             var result = new XRow(text1).CompareTo(text2);
@@ -31,7 +30,6 @@ namespace FileFactoryTest
             var text1 = "1.Apple"; 
             var text2 = "1.Banana";
 
-
             // act
             var result = new XRow(text1).CompareTo(text2);
 
@@ -45,7 +43,6 @@ namespace FileFactoryTest
             // arrange
             var text1 = "1.Apple";
             var text2 = "1.Apple";
-
 
             // act
             var result = new XRow(text1).CompareTo(text2);
@@ -61,7 +58,6 @@ namespace FileFactoryTest
             var text1 = "2.Apple";
             var text2 = "1.Apple";
 
-
             // act
             var result = new XRow(text1).CompareTo(text2);
 
@@ -75,7 +71,6 @@ namespace FileFactoryTest
             // arrange
             var text1 = "1.Apple";
             var text2 = "2.Apple";
-
 
             // act
             var result = new XRow(text1).CompareTo(text2);
@@ -91,7 +86,6 @@ namespace FileFactoryTest
             var text1 = "1.AppleA";
             var text2 = "1.Apple";
 
-
             // act
             var result = new XRow(text1).CompareTo(text2);
 
@@ -105,7 +99,6 @@ namespace FileFactoryTest
             // arrange
             var text1 = "1.Apple";
             var text2 = "1.AppleA";
-
 
             // act
             var result = new XRow(text1).CompareTo(text2);
@@ -121,7 +114,6 @@ namespace FileFactoryTest
             var text1 = "11.Apple";
             var text2 = "1.Apple";
 
-
             // act
             var result = new XRow(text1).CompareTo(text2);
 
@@ -136,7 +128,6 @@ namespace FileFactoryTest
             var text1 = "1.Apple";
             var text2 = "11.AppleA";
 
-
             // act
             var result = new XRow(text1).CompareTo(text2);
 
@@ -150,7 +141,6 @@ namespace FileFactoryTest
             // arrange
             var text1 = "100.Apple";
             var text2 = "19.Apple";
-
 
             // act
             var result = new XRow(text1).CompareTo(text2);

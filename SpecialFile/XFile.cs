@@ -94,7 +94,7 @@ namespace SpecialFile
 
             // Initialise paramets
             var fileWorker = new XFileWorker(destinationFile);
-            var blockLimit = (int)(getAvailableMemory() * 0.2 / Environment.ProcessorCount);
+            var blockLimit = (int)(getAvailableMemory() * 0.3 / Environment.ProcessorCount);
             var blockCapacity = blockLimit / DefaultXRowLength;
             long currentblockSize = 0;
             XRow row = null;
@@ -119,7 +119,7 @@ namespace SpecialFile
                         rows = new List<XRow>(blockCapacity);
 
                         // Start merging the chanks to load CPU and I/O in parallel
-                        //fileWorker.Merge();
+                        fileWorker.Merge();
                     }
                 }
             }
@@ -180,7 +180,6 @@ namespace SpecialFile
             /// If it's the last merge the function merges all available files and waits for tasks completion.</param>
             internal void Merge(bool lastMerge = false)
             {
-                Task.WaitAll(tasks.Where(t => t != null).ToArray());
                 while (blocks.Count > 1)
                 {
                     taskIndex = (fileCounter < Environment.ProcessorCount) ? fileCounter : Task.WaitAny(tasks);
@@ -219,27 +218,36 @@ namespace SpecialFile
                     {
                         file.WriteLine(list[i]);
                     }
+
+                    file.Close();
                 }
             }
 
             private async Task mergeAsync(string source1, string source2, string destination, params Task[] tasksToWait)
             {
-                await Task.WhenAll(tasksToWait);
-
-                merge(source1, source2, destination);
+                await Task.Run(() =>
+                    {
+                        Task.WaitAll(tasksToWait);
+                        merge(source1, source2, destination);
+                    });
             }
 
             private void merge(string source1, string source2, string destination)
             {
+                long s1 = 0;
+                long s2 = 0;
+
                 using (var f1 = File.OpenText(source1))
                 {
                     XRow l1 = f1.ReadXRow();
+                    s1 += l1.String.Length;
 
                     using (var f2 = File.OpenText(source2))
                     {
                         XRow l2 = f2.ReadXRow();
+                        s2 += l2.String.Length;
 
-                        using (var d = new StreamWriter(destination, false, Encoding.Default, 65536))
+                        using (var d = new StreamWriter(destination, false, Encoding.Default))
                         {
                             while (l1 != null || l2 != null)
                             {
@@ -247,6 +255,7 @@ namespace SpecialFile
                                 {
                                     d.WriteLine(l2);
                                     l2 = f2.ReadXRow();
+                                    s2 += l2 != null ? l2.String.Length : 0;
                                     continue;
                                 }
 
@@ -254,6 +263,7 @@ namespace SpecialFile
                                 {
                                     d.WriteLine(l1);
                                     l1 = f1.ReadXRow();
+                                    s1 += l1 != null ? l1.String.Length : 0;
                                     continue;
                                 }
 
@@ -261,14 +271,40 @@ namespace SpecialFile
                                 {
                                     d.WriteLine(l1);
                                     l1 = f1.ReadXRow();
+                                    s1 += l1 != null ? l1.String.Length : 0;
                                     continue;
                                 }
 
                                 d.WriteLine(l2);
                                 l2 = f2.ReadXRow();
+                                s2 += l2 != null ? l2.String.Length : 0;
+                            }
+
+                            d.Close();
+                        }
+                    }
+                }
+
+
+                var ex = false;
+                using (var t1 = File.Open(source1, FileMode.Open))
+                {
+                    using (var t2 = File.Open(source2, FileMode.Open))
+                    {
+                        using (var t3 = File.Open(destination, FileMode.Open))
+                        {
+                            if (t3.Length != (t1.Length + t2.Length))
+                            {
+                                ex = true;
                             }
                         }
                     }
+
+                }
+
+                if(ex)
+                {
+                    ex = false;
                 }
 
                 File.Delete(source1);

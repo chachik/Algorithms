@@ -4,10 +4,10 @@ namespace SpecialFile
 {
     public static class StreamReaderExtensions
     {
-        private static string str = string.Empty;
-
         public static XRow ReadXRow(this StreamReader reader)
         {
+            var str = string.Empty;
+
             if ((str = reader.ReadLine()) != null)
             {
                 return new XRow(str);

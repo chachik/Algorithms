@@ -4,14 +4,12 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 
-namespace FileFactoryTest
+namespace SpecialFileTest
 {
     [TestClass]
     public class XFileTest
     {
-        const string SourceFile = "TestFile1.txt";
-        const string DestinationFile = "SortedTestFile1.txt";
-        const long FileSize = 1000000000;
+        const long FileSize = 1048576; // 1Mb
         const int MinNumber = 1;
         const int MaxNumber = 100000;
         static List<string> Strings =
@@ -58,10 +56,15 @@ namespace FileFactoryTest
         public void SortShouldCreateDestinationFile()
         {
             // arrange
+            const string FileName = "TestFile3.txt";
+            const string DestinationFile = "SortedFile3.txt";
+
+            var options = new XFileGenerationOptions { FileName = FileName, Strings = Strings, MinNumber = MinNumber, MaxNumber = MaxNumber, FileSize = FileSize };
             var xFile = new XFile();
+            xFile.Generate(options);
 
             // act
-            xFile.Sort(SourceFile, DestinationFile);
+            xFile.Sort(FileName, DestinationFile);
 
             // assert
             Assert.IsTrue(File.Exists(DestinationFile));
@@ -71,13 +74,18 @@ namespace FileFactoryTest
         public void SortShouldCreateDestinationFileOfTheSameSize()
         {
             // arrange
+            const string FileName = "TestFile4.txt";
+            const string DestinationFile = "SortedFile4.txt";
+
+            var options = new XFileGenerationOptions { FileName = FileName, Strings = Strings, MinNumber = MinNumber, MaxNumber = MaxNumber, FileSize = FileSize };
             var xFile = new XFile();
+            xFile.Generate(options);
 
             // act
-            xFile.Sort(SourceFile, DestinationFile);
+            xFile.Sort(FileName, DestinationFile);
 
             // assert
-            using (var sourceFile = File.Open(SourceFile, FileMode.Open))
+            using (var sourceFile = File.Open(FileName, FileMode.Open))
             {
                 using (var destinationFile = File.Open(DestinationFile, FileMode.Open))
                 {
@@ -90,10 +98,15 @@ namespace FileFactoryTest
         public void SortShouldCreateSortedFile()
         {
             // arrange
+            const string FileName = "TestFile4.txt";
+            const string DestinationFile = "SortedFile4.txt";
+
+            var options = new XFileGenerationOptions { FileName = FileName, Strings = Strings, MinNumber = MinNumber, MaxNumber = MaxNumber, FileSize = FileSize };
             var xFile = new XFile();
+            xFile.Generate(options);
 
             // act
-            xFile.Sort(SourceFile, DestinationFile);
+            xFile.Sort(FileName, DestinationFile);
 
             // assert
             using (var destinationFile = File.OpenText(DestinationFile))

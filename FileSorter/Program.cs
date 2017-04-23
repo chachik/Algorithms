@@ -1,5 +1,6 @@
 ﻿using SpecialFile;
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace FileSorter
@@ -27,7 +28,7 @@ namespace FileSorter
             do
             {
                 Console.WriteLine();
-                Console.Write("Please provide a source file name: ");
+                Console.Write("Please provide a name of the source file: ");
                 source = Console.ReadLine();
                 if (!File.Exists(source))
                 {
@@ -40,7 +41,7 @@ namespace FileSorter
             do
             {
                 Console.WriteLine();
-                Console.Write("Please provide a target file name: ");
+                Console.Write("Please provide a name of the target file: ");
                 destination = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(destination))
                 {
@@ -53,11 +54,15 @@ namespace FileSorter
             Console.WriteLine();
             Console.WriteLine("File is being sorted...");
 
+            var watch = Stopwatch.StartNew();
+
             var xFile = new XFile();
             xFile.Sort(source, destination);
 
+            watch.Stop();
+
             Console.WriteLine();
-            Console.WriteLine("Done!");
+            Console.WriteLine("Done! Execution time: {0}", watch.Elapsed);
 
             Console.ReadKey();
         }

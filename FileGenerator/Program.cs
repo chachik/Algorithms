@@ -1,6 +1,7 @@
 ﻿using SpecialFile;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 namespace FileGenerator
 {
@@ -38,7 +39,7 @@ namespace FileGenerator
             do
             {
                 Console.WriteLine();
-                Console.Write("Please provide a target file size in bytes: ");
+                Console.Write("Please provide a size of the target file in bytes: ");
                 var line = Console.ReadLine();
                 if (!long.TryParse(line, out size))
                 {
@@ -50,7 +51,7 @@ namespace FileGenerator
             do
             {
                 Console.WriteLine();
-                Console.Write("Please provide a target file name: ");
+                Console.Write("Please provide a name of the target file: ");
                 file = Console.ReadLine();
                 if (string.IsNullOrWhiteSpace(file))
                 {
@@ -64,10 +65,13 @@ namespace FileGenerator
 
             var xFile = new XFile();
             var options = new XFileGenerationOptions { FileName = file, Strings = Strings, MinNumber = MinNumber, MaxNumber = MaxNumber, FileSize = size };
+
+            var watch = Stopwatch.StartNew();
             xFile.Generate(options);
+            watch.Stop();
 
             Console.WriteLine();
-            Console.WriteLine("Done!");
+            Console.WriteLine("Done! Execution time: {0}", watch.Elapsed);
 
             Console.ReadKey();
         }

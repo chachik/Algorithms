@@ -4,11 +4,11 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{DB7094F8-782E-48AA-8C5D-D44E1AA8AB7E}</ProjectGuid>
+    <ProjectGuid>{1C19B379-8624-4C3C-A0D3-25143A562398}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SpecialFileTest</RootNamespace>
-    <AssemblyName>SpecialFileTest</AssemblyName>
+    <RootNamespace>SortingAlgorithmsTest</RootNamespace>
+    <AssemblyName>SortingAlgorithmsTest</AssemblyName>
     <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{3AC096D0-A1C2-E12C-1390-A8335801FDAB};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
@@ -50,17 +50,16 @@
     <Reference Include="System.Core" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="XRowTest.cs" />
-    <Compile Include="XFileTest.cs" />
+    <Compile Include="QuickSortTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\SpecialFile\SpecialFile.csproj">
-      <Project>{da575240-ab4d-400b-882c-ae85e3b943ba}</Project>
-      <Name>SpecialFile</Name>
+    <ProjectReference Include="..\..\SortingAlgorithms\SortingAlgorithms.csproj">
+      <Project>{4360b045-7b3c-4069-b08e-abadf7bd1756}</Project>
+      <Name>SortingAlgorithms</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets" Condition="Exists('$(VSToolsPath)\TeamTest\Microsoft.TestTools.targets')" />
